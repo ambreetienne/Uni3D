@@ -2,7 +2,7 @@
 model=create_uni3d
 
 clip_model="EVA02-E-14-plus" 
-pretrained="/path/to/clip_model/open_clip_pytorch_model.bin" # or  "laion2b_s9b_b144k"  
+pretrained="models/clip.bin" # or  "laion2b_s9b_b144k"  
 
 if [ "$1" = "giant" ]; then
     pc_model="eva_giant_patch14_560"
@@ -24,7 +24,7 @@ else
     exit 1
 fi
 
-ckpt_path="/path/to/checkpoints/model.pt"
+ckpt_path="models/uni3dg.pt"
 
 torchrun --nproc-per-node=1 main.py \
     --model $model \
