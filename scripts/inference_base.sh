@@ -20,7 +20,7 @@ fi
 
 ckpt_path="models/uni3dg.pt"
 
-torchrun --nproc-per-node=1 test.py \
+torchrun --nproc-per-node=1 base.py \
     --model $model \
     --batch-size 32 \
     --npoints 10000 \

@@ -548,6 +548,7 @@ def test_zeroshot_3d_core(test_loader, validate_dataset_name, model, clip_model,
 
             pc = pc.to(device=args.device, non_blocking=True)
             rgb = rgb.to(device=args.device, non_blocking=True)
+            rgb[:, :, :] = 0
             feature = torch.cat((pc, rgb),dim=-1)
             target = target.to(device=args.device, non_blocking=True)
 
@@ -583,11 +584,11 @@ def test_zeroshot_3d_core(test_loader, validate_dataset_name, model, clip_model,
             if i % args.print_freq == 0:
                 progress.display(i)
 
-        np.save('results/zero shot classif/results_top_1', per_class_correct_top1)
-        np.save('results/zero shot classif/results_top_3', per_class_correct_top3)
-        np.save('results/zero shot classif/results_top_5', per_class_correct_top5)
-        np.save('results/zero shot classif/per_class_stats', per_class_stats)
-        
+        np.save('results/no_color/results_top_1', per_class_correct_top1)
+        np.save('results/no_color/results_top_3', per_class_correct_top3)
+        np.save('results/no_color/results_top_5', per_class_correct_top5)
+        np.save('results/no_color/per_class_stats', per_class_stats)
+
         top1_accuracy_per_class = {}
         top3_accuracy_per_class = {}
         top5_accuracy_per_class = {}
