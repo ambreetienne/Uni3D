@@ -11,6 +11,8 @@ from easydict import EasyDict
 import yaml
 from data.datasets import Dataset_3D
 
+import open3d as o3d 
+
 def merge_new_config(config, new_config):
     for key, val in new_config.items():
         if not isinstance(val, dict):
@@ -247,3 +249,25 @@ class GaussianBlur(object):
 def get_dataset(train_transform, tokenizer, args, dataset_name=None):
     dataset_3d = Dataset_3D(args, tokenizer, dataset_name, train_transform)
     return dataset_3d.dataset
+
+def remove_hidden(pc_batch, camera):
+    """
+    Remove hidden points using Open3D remove hidden function
+    pc: bs x npoints x 3
+    camera: list(float) [3]
+    """
+    bs, npoints, _ = pc_batch.shape
+    new_pc = np.zeros((bs, npoints, 3))
+    for pci in range(bs):
+        pcd = o3d.geometry.PointCloud()
+        pcd.points = o3d.utility.Vector3dVector(pc_batch[pci])
+        diameter = np.linalg.norm(np.asarray(pcd.get_max_bound()) - np.asarray(pcd.get_min_bound()))
+        new_camera = [c*diameter for c in camera]
+        radius = diameter * 100
+        try:
+            _, pt_map = pcd.hidden_point_removal(new_camera, radius)
+            pcd_removed = np.asarray(pcd.select_by_index(pt_map).points)
+        except:
+            pcd_removed = np.asarray(pcd.points)
+        new_pc[pci, :pcd_removed.shape[0]] = pcd_removed
+    return torch.tensor(new_pc, dtype=torch.float32)
